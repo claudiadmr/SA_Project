@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1038829971338",
+    "project_id": "drivesafe-384814",
+    "storage_bucket": "drivesafe-384814.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1038829971338:android:a57d6c8ceec94eb33e4a73",
+        "android_client_info": {
+          "package_name": "com.example.driveclassifier"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1038829971338-k18l8vfrn2ltan4rbs7v0q2kf2f1almo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyWmH7ztaMpDP31uZj6AgwK_fEfhVlY1w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1038829971338-k18l8vfrn2ltan4rbs7v0q2kf2f1almo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
