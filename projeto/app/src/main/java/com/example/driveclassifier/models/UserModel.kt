@@ -1,4 +1,4 @@
-package com.example.driveclassifier
+package com.example.driveclassifier.models
 
 data class UserModel(
     var id: Int ?=null,

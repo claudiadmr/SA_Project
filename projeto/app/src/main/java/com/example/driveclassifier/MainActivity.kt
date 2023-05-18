@@ -3,6 +3,7 @@ package com.example.driveclassifier
 import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
@@ -19,6 +20,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.driveclassifier.models.UserModel
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.database.FirebaseDatabase
@@ -48,6 +50,15 @@ class MainActivity : AppCompatActivity() {
         // Check if the name is already saved in SharedPreferences
         val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         name = sharedPreferences.getString("name", "") ?: ""
+        Log.d("INFO", "Name: $name")
+
+
+        var showTrips = findViewById<Button>(R.id.btn_trips)
+        showTrips.setOnClickListener {
+            val intent = Intent(this@MainActivity, MapActivity::class.java)
+            startActivity(intent)
+        }
+
 
         // If the name is not already saved, show the name EditText and save button
         if (name.isBlank()) {
