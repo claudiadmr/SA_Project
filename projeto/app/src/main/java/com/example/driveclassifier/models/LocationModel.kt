@@ -5,5 +5,6 @@ data class LocationModel(
     val lat: Double,
     val roadUse: String,
     val speed: Double,
-    val speedLimit: Double
+    val speedLimit: Double,
+    val speedDiff: Double
 )

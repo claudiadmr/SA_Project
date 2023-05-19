@@ -1,5 +1,6 @@
 package com.example.driveclassifier
 
+import android.app.ProgressDialog
 import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.content.Context
@@ -10,38 +11,38 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.driveclassifier.models.UserModel
-import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
-import com.google.firebase.database.FirebaseDatabase
+import com.google.gson.Gson
+import okhttp3.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
     private val LOCATION_PERMISSION_CODE = 1
     private val MIN_TIME_BETWEEN_UPDATES = 1000L //1 seconds
     private val MIN_DISTANCE_CHANGE_FOR_UPDATES = 10f //10 meters
-    private val databaseURL =
-        "https://drivesafe-384814-default-rtdb.europe-west1.firebasedatabase.app/"
-
     private lateinit var locationManager: LocationManager
     private var name = ""
     private var helper: DBHelper? = null
+    private val url = "https://api-drive-safe.onrender.com/trip/"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         helper = DBHelper(applicationContext)
 
         // Get a reference to the name EditText view
@@ -55,7 +56,7 @@ class MainActivity : AppCompatActivity() {
 
         var showTrips = findViewById<Button>(R.id.btn_trips)
         showTrips.setOnClickListener {
-            val intent = Intent(this@MainActivity, MapActivity::class.java)
+            val intent = Intent(this@MainActivity, ListActivity::class.java)
             startActivity(intent)
         }
 
@@ -81,7 +82,7 @@ class MainActivity : AppCompatActivity() {
             findViewById<Button>(R.id.btn_save_data).setOnClickListener{
                 var data = readDataSQLite()
                 if(!data.isEmpty()){
-                    writeToFirebaseDatabase(data)
+                    writeToURL(data, this)
                     deleteDataInDB()
 
                 }else{
@@ -154,7 +155,7 @@ class MainActivity : AppCompatActivity() {
         val txt_vlc = findViewById<TextView>(R.id.txt_vlc)
         txt_lat.text = lat.toString()
         txt_long.text = long.toString()
-        txt_vlc.text = speed.toInt().toString()
+        txt_vlc.text = speed.toInt().toString() + "km/h"
         if(speed != 0f){
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
             val current = LocalDateTime.now().format(formatter)
@@ -163,60 +164,68 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun hideView() {
-        findViewById<TextView>(R.id.textView).visibility = View.INVISIBLE
-        findViewById<TextView>(R.id.textView2).visibility = View.INVISIBLE
-        findViewById<TextView>(R.id.textView3).visibility = View.INVISIBLE
-        findViewById<TextView>(R.id.txt_lat).visibility = View.INVISIBLE
-        findViewById<TextView>(R.id.txt_long).visibility = View.INVISIBLE
-        findViewById<TextView>(R.id.txt_vlc).visibility = View.INVISIBLE
-        findViewById<Button>(R.id.btn_save_data).visibility = View.INVISIBLE
-        findViewById<TextView>(R.id.txt_name).visibility = View.VISIBLE
+        findViewById<LinearLayout>(R.id.layout_location).visibility = View.INVISIBLE
+        findViewById<LinearLayout>(R.id.layout_btn).visibility = View.INVISIBLE
+        findViewById<LinearLayout>(R.id.layout_name).visibility = View.VISIBLE
+
     }
 
     private fun showView() {
-        findViewById<TextView>(R.id.textView).visibility = View.VISIBLE
-        findViewById<TextView>(R.id.textView2).visibility = View.VISIBLE
-        findViewById<TextView>(R.id.textView3).visibility = View.VISIBLE
-        findViewById<TextView>(R.id.txt_lat).visibility = View.VISIBLE
-        findViewById<TextView>(R.id.txt_long).visibility = View.VISIBLE
-        findViewById<TextView>(R.id.txt_vlc).visibility = View.VISIBLE
-        findViewById<TextView>(R.id.txt_name).visibility = View.VISIBLE
-        findViewById<Button>(R.id.btn_save_data).visibility = View.VISIBLE
-        findViewById<Button>(R.id.btn_save).visibility = View.GONE
-        findViewById<EditText>(R.id.editTextTextPersonName2).visibility = View.GONE
+
+        findViewById<LinearLayout>(R.id.layout_location).visibility = View.VISIBLE
+        findViewById<LinearLayout>(R.id.layout_btn).visibility = View.VISIBLE
+        findViewById<LinearLayout>(R.id.layout_name).visibility = View.GONE
     }
 
-    /*private fun convertLocation(latitude: Double, longitude: Double) {
-        val geocoder = Geocoder(this, Locale.getDefault())
-        val addressList = geocoder.getFromLocation(latitude, longitude, 1)
-        val address = addressList?.get(0)
-        Log.d("TAG", address.toString());
-    }*/
+    private fun writeToURL(data: List<UserModel>, context: Context) {
+        val client = OkHttpClient.Builder().build()
 
+        val jsonMediaType = "application/json".toMediaType()
+        val requestBody = data.toJson().toRequestBody(jsonMediaType)
 
+        val request = Request.Builder()
+            .url(url+name)
+            .post(requestBody)
+            .build()
 
-    private fun writeToFirebaseDatabase(data: List<UserModel>) {
-        val database = FirebaseDatabase.getInstance(databaseURL)
-        val myRef = database.getReference(name)
-        val tasks = mutableListOf<Task<Void>>()
-        for (userModel in data) {
-            val key = myRef.push().key ?: continue
-            tasks.add(myRef.child(key).setValue(userModel))
-        }
-        var counts = 0;
-        var countf = 0;
-        Tasks.whenAll(tasks)
-            .addOnSuccessListener {
-                Log.d(TAG, "Data was successfully written to Firebase Realtime Database")
-                counts++
+        // Show loading indicator
+        val progressDialog = ProgressDialog(context)
+        progressDialog.setMessage("Enviar Dados...")
+        progressDialog.setCancelable(false)
+        progressDialog.show()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onResponse(call: Call, response: Response) {
+                // Hide loading indicator
+                progressDialog.dismiss()
+
+                if (response.isSuccessful) {
+                    // Handle successful response
+                    val responseBody = response.body?.string()
+                    Handler(Looper.getMainLooper()).post {
+                        Log.d(TAG, "Data was successfully sent to the server. Response: $responseBody")
+                        showToast(context, "Viagem guardada com sucesso!")
+                    }
+                } else {
+                    // Handle unsuccessful response
+                    Handler(Looper.getMainLooper()).post {
+                        Log.e(TAG, "Failed to send data to the server. Response code: ${response.code}")
+                        showToast(context, "Falha ao enviar viagem!")
+                    }
+                }
             }
-            .addOnFailureListener {
-                Log.e(TAG, "Failed to write data to Firebase Realtime Database", it)
-                countf++
+
+            override fun onFailure(call: Call, e: IOException) {
+                // Hide loading indicator
+                progressDialog.dismiss()
+
+                // Handle network failure
+                Handler(Looper.getMainLooper()).post {
+                    Log.e(TAG, "Failed to send data to the server. Error: ${e.message}")
+                    showToast(context, "Falha ao enviar viagem!")
+                }
             }
-        if(counts !=0){
-            Toast.makeText(this, "Data saved succefully!", Toast.LENGTH_SHORT).show()
-        }
+        })
     }
 
     private fun saveDataSQLite(latitude: Double, longitude: Double, speed: Float, date: String) {
@@ -253,6 +262,15 @@ class MainActivity : AppCompatActivity() {
     private fun deleteDataInDB() {
         var db = helper?.readableDatabase
         db?.execSQL("delete from location");
+    }
+
+
+    private fun List<UserModel>.toJson(): String {
+        val gson = Gson()
+        return gson.toJson(this)
+    }
+    private fun showToast(context: Context, message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     // Handle the result of the permission request

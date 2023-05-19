@@ -48,7 +48,7 @@ class ListAdapter(private val context: Context, private val arrayList: List<Trip
 
         startHour.text = startTime
         endHour.text = endTime
-        duration.text = trip.duration.toString()
+        duration.text = trip.duration.toString()+ "min"
 
         convertView.setOnClickListener {
             val fragment = MapsFragment()

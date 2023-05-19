@@ -78,6 +78,7 @@ class GetDataTask(private val sharedPreferences: SharedPreferences, private val 
                     val lat = locationObject.getDouble("lat")
                     val roadUse = locationObject.getString("roadUse")
                     val speed = locationObject.getDouble("speed")
+                    val speedDiff = locationObject.getDouble("speed_dif")
                     // Handle the case where speedLimit is null
                     val speedLimit = if (!locationObject.isNull("speedLimit")) {
                         locationObject.getDouble("speedLimit")
@@ -86,7 +87,7 @@ class GetDataTask(private val sharedPreferences: SharedPreferences, private val 
                         0.0
                     }
 
-                    val location = LocationModel(lang, lat, roadUse, speed, speedLimit)
+                    val location = LocationModel(lang, lat, roadUse, speed, speedLimit, speedDiff)
                     locationList.add(location)
                 }
 
