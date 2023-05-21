@@ -25,8 +25,7 @@ class MapsFragment : Fragment() {
     private val callback = OnMapReadyCallback { googleMap ->
         if (::trip.isInitialized) {
             val location = mutableListOf<LatLng>()
-
-            var previousLocation: LocationModel? = null
+            var previousLatLng: LatLng? = null
             var previousColor: Int? = null
             var currentPolylineOptions: PolylineOptions? = null
 
@@ -37,7 +36,6 @@ class MapsFragment : Fragment() {
                 when {
                     speedDiff == 0.0 -> {
                         if (previousColor != Color.parseColor("#008000")) {
-                            // Create a new polyline for the green segment
                             currentPolylineOptions = PolylineOptions().clickable(true)
                                 .color(Color.parseColor("#008000"))
                             previousColor = Color.parseColor("#008000")
@@ -45,7 +43,6 @@ class MapsFragment : Fragment() {
                     }
                     speedDiff in 0.1..10.0 -> {
                         if (previousColor != Color.parseColor("#FAFA33")) {
-                            // Create a new polyline for the yellow segment
                             currentPolylineOptions = PolylineOptions().clickable(true)
                                 .color(Color.parseColor("#FAFA33"))
                             previousColor = Color.parseColor("#FAFA33")
@@ -53,7 +50,6 @@ class MapsFragment : Fragment() {
                     }
                     speedDiff in 11.0..20.0 -> {
                         if (previousColor != Color.parseColor("#FFA500")) {
-                            // Create a new polyline for the orange segment
                             currentPolylineOptions = PolylineOptions().clickable(true)
                                 .color(Color.parseColor("#FFA500"))
                             previousColor = Color.parseColor("#FFA500")
@@ -61,7 +57,6 @@ class MapsFragment : Fragment() {
                     }
                     else -> {
                         if (previousColor != Color.RED) {
-                            // Create a new polyline for the red segment
                             currentPolylineOptions = PolylineOptions().clickable(true)
                                 .color(Color.RED)
                             previousColor = Color.RED
@@ -69,9 +64,12 @@ class MapsFragment : Fragment() {
                     }
                 }
 
+                previousLatLng?.let {
+                    currentPolylineOptions?.add(it)
+                }
                 currentPolylineOptions?.add(latLng)
                 location.add(latLng)
-                previousLocation = locationModel
+                previousLatLng = latLng
 
                 // Add the completed polyline to the map
                 currentPolylineOptions?.let {
@@ -92,6 +90,7 @@ class MapsFragment : Fragment() {
                 )
             }
         }
+
 
     }
 
