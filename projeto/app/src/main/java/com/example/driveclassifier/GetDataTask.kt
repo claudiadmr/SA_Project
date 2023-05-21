@@ -68,7 +68,9 @@ class GetDataTask(private val sharedPreferences: SharedPreferences, private val 
                 val endDate = tripObject.getString("end_date")
                 val nameTrip = tripObject.getString("nametrip")
                 val startDate = tripObject.getString("start_date")
-
+                val aggressiveDriving = tripObject.getDouble("aggressive_driving")
+                val moderateDriving = tripObject.getDouble("moderate_driving")
+                val normalDriving = tripObject.getDouble("normal_driving")
                 val locationArray = tripObject.getJSONArray("locations")
                 val locationList = mutableListOf<LocationModel>()
 
@@ -79,6 +81,8 @@ class GetDataTask(private val sharedPreferences: SharedPreferences, private val 
                     val roadUse = locationObject.getString("roadUse")
                     val speed = locationObject.getDouble("speed")
                     val speedDiff = locationObject.getDouble("speed_dif")
+
+
                     // Handle the case where speedLimit is null
                     val speedLimit = if (!locationObject.isNull("speedLimit")) {
                         locationObject.getDouble("speedLimit")
@@ -91,7 +95,7 @@ class GetDataTask(private val sharedPreferences: SharedPreferences, private val 
                     locationList.add(location)
                 }
 
-                val trip = TripModel(duration, endDate, locationList, nameTrip, startDate)
+                val trip = TripModel(duration, endDate, locationList, nameTrip, startDate, aggressiveDriving, moderateDriving, normalDriving)
                 tripList.add(trip)
             }
 

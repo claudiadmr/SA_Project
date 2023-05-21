@@ -38,10 +38,17 @@ class ListAdapter(private val context: Context, private val arrayList: List<Trip
         val startHour = convertView.findViewById<TextView>(R.id.startDateHour)
         val endHour = convertView.findViewById<TextView>(R.id.endDateHour)
         val duration = convertView.findViewById<TextView>(R.id.duration)
+        val vlc_a = convertView.findViewById<TextView>(R.id.txt_vlc_a)
+        val vlc_m = convertView.findViewById<TextView>(R.id.txt_vlc_m)
+        val vlc_n = convertView.findViewById<TextView>(R.id.txt_vlc_n)
+
         val trip = arrayList[position]
 
-        title.text = trip.nameTrip
+        title.text = "Viagem " + trip.nameTrip
         startDate.text = trip.startDate
+        vlc_n.text = "1km-10km: " +trip.normalDriving.toString()+'%'
+        vlc_m.text = "11km-20km: " + trip.moderateDriving.toString()+'%'
+        vlc_a.text = ">20km: " + trip.aggressiveDriving.toString()+'%'
 
         val startTime = extractTimeFromDateTime(trip.startDate)
         val endTime = extractTimeFromDateTime(trip.endDate)

@@ -7,5 +7,8 @@ data class TripModel(
     val endDate: String,
     val locations: List<LocationModel>,
     val nameTrip: String,
-    val startDate: String
+    val startDate: String,
+    val aggressiveDriving: Double,
+    val moderateDriving: Double,
+    val normalDriving: Double,
 ) : Serializable

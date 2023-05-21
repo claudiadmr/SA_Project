@@ -65,11 +65,11 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
                 android:text="-"
                 android:textColor="#000"
-                android:textSize="16sp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"/>
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/endDateHour"
@@ -79,7 +79,46 @@
                 android:textColor="#000"
                 android:textSize="16sp" />
         </LinearLayout>
+
+
     </LinearLayout>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Excesso de velocidade:"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txt_vlc_n"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1km-10km: "
+            android:textColor="#FFD300"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/txt_vlc_m"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="11km-20km: "
+            android:textColor="#FFA500"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/txt_vlc_a"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="&gt;20km: "
+            android:textColor="@color/colorRed"
+            android:textSize="16sp" />
+    </LinearLayout>
 </LinearLayout>

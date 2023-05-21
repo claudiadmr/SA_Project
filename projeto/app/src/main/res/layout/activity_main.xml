@@ -11,13 +11,25 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="8dp">
-
-        <ImageView
-            android:paddingTop="16dp"
-            android:layout_width="250dp"
-            android:layout_height="250dp"
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:src="@mipmap/ic_launcher_round" />
+            android:paddingTop="16dp"
+            android:orientation="vertical">
+            <ImageView
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:src="@mipmap/ic_launcher_round" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SafeTravels"
+                android:layout_gravity="center"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:textColor="@color/purple_500" />
+        </LinearLayout>
 
 
         <LinearLayout
@@ -180,11 +192,11 @@
                 android:textSize="22sp"/>
 
             <Button
-                android:id="@+id/btn_trips"
+                android:id="@+id/btn_profile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Ver Viagens"
+                android:text="Ver Perfil"
                 android:textSize="22sp"/>
         </LinearLayout>
 

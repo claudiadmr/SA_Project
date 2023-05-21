@@ -54,9 +54,9 @@ class MainActivity : AppCompatActivity() {
         Log.d("INFO", "Name: $name")
 
 
-        var showTrips = findViewById<Button>(R.id.btn_trips)
+        var showTrips = findViewById<Button>(R.id.btn_profile)
         showTrips.setOnClickListener {
-            val intent = Intent(this@MainActivity, ListActivity::class.java)
+            val intent = Intent(this@MainActivity, ProfileActivity::class.java)
             startActivity(intent)
         }
 
