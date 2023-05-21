@@ -36,6 +36,12 @@
             app:layout_constraintBottom_toBottomOf="@id/listView"
             app:layout_constraintStart_toStartOf="@id/listView"
             app:layout_constraintEnd_toEndOf="@id/listView" />
+        <View
+            android:id="@+id/progressOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#80000000"
+            android:visibility="gone" /> <!-- Semi-transparent black overlay -->
 
     </FrameLayout>
 

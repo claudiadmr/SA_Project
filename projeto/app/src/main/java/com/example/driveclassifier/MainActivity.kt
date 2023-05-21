@@ -15,6 +15,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -24,11 +25,13 @@ import androidx.core.content.ContextCompat
 import com.example.driveclassifier.models.UserModel
 import com.google.gson.Gson
 import okhttp3.*
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
+import java.text.DecimalFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
 
 class MainActivity : AppCompatActivity() {
     private val LOCATION_PERMISSION_CODE = 1
@@ -38,12 +41,17 @@ class MainActivity : AppCompatActivity() {
     private var name = ""
     private var helper: DBHelper? = null
     private val url = "https://api-drive-safe.onrender.com/trip/"
+    private lateinit var progressBar: ProgressBar
+    private lateinit var progressOverlay: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         helper = DBHelper(applicationContext)
+
+        progressOverlay = findViewById(R.id.progressOverlay3)
+        progressBar = findViewById(R.id.progressBar3)
 
         // Get a reference to the name EditText view
         val nameEditText = findViewById<EditText>(R.id.editTextTextPersonName2)
@@ -65,6 +73,9 @@ class MainActivity : AppCompatActivity() {
         if (name.isBlank()) {
             hideView()
             findViewById<Button>(R.id.btn_save).setOnClickListener {
+                val imm: InputMethodManager =
+                    getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
                 // Get the name from the EditText view and save it to SharedPreferences
                 name = nameEditText.text.toString().trim()
                 if (name.isNotBlank()) {
@@ -77,7 +88,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             // If the name is already saved, show the other views
             nameEditText.setText(name)
-            findViewById<TextView>(R.id.txt_name).text = name
+            //findViewById<TextView>(R.id.txt_name).text = name
             showView()
             findViewById<Button>(R.id.btn_save_data).setOnClickListener{
                 var data = readDataSQLite()
@@ -153,8 +164,9 @@ class MainActivity : AppCompatActivity() {
         val txt_lat = findViewById<TextView>(R.id.txt_lat)
         val txt_long = findViewById<TextView>(R.id.txt_long)
         val txt_vlc = findViewById<TextView>(R.id.txt_vlc)
-        txt_lat.text = lat.toString()
-        txt_long.text = long.toString()
+        val decimalFormat = DecimalFormat("#.####") // Formats the number with up to 4 decimal places
+        txt_lat.text = decimalFormat.format(lat)
+        txt_long.text = decimalFormat.format(long)
         txt_vlc.text = speed.toInt().toString() + "km/h"
         if(speed != 0f){
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
@@ -188,16 +200,16 @@ class MainActivity : AppCompatActivity() {
             .post(requestBody)
             .build()
 
-        // Show loading indicator
-        val progressDialog = ProgressDialog(context)
-        progressDialog.setMessage("Enviar Dados...")
-        progressDialog.setCancelable(false)
-        progressDialog.show()
+        runOnUiThread {
+           showProgressBar()
+        }
 
         client.newCall(request).enqueue(object : Callback {
             override fun onResponse(call: Call, response: Response) {
                 // Hide loading indicator
-                progressDialog.dismiss()
+                runOnUiThread {
+                   hideProgressBar()
+                }
 
                 if (response.isSuccessful) {
                     // Handle successful response
@@ -217,7 +229,9 @@ class MainActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call, e: IOException) {
                 // Hide loading indicator
-                progressDialog.dismiss()
+                runOnUiThread {
+                    hideProgressBar()
+                }
 
                 // Handle network failure
                 Handler(Looper.getMainLooper()).post {
@@ -292,5 +306,15 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun showProgressBar() {
+        progressBar.visibility = ProgressBar.VISIBLE
+        progressOverlay.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressBar() {
+        progressBar.visibility = ProgressBar.GONE
+        progressOverlay.visibility = View.GONE
     }
 }

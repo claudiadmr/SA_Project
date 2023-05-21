@@ -3,6 +3,7 @@ package com.example.driveclassifier
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.ListView
 import android.widget.ProgressBar
 import androidx.appcompat.widget.Toolbar
@@ -11,11 +12,15 @@ import com.example.driveclassifier.models.TripModel
 class ListActivity : AppCompatActivity(), GetDataTask.OnDataFetchedListener {
     private lateinit var listView: ListView
     private lateinit var progressBar: ProgressBar
+    private lateinit var progressOverlay: View
     private var tripList: List<TripModel>? = null
     var adapter: ListAdapter? = null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
+
 
         var toolbar = findViewById<Toolbar>(R.id.toolbar) // Add this line
         setSupportActionBar(toolbar) // Add this line
@@ -25,7 +30,7 @@ class ListActivity : AppCompatActivity(), GetDataTask.OnDataFetchedListener {
             onBackPressed()
         }
 
-
+        progressOverlay = findViewById<View>(R.id.progressOverlay)
         progressBar = findViewById(R.id.progressBar)
         listView = findViewById(R.id.listView)
 
@@ -59,9 +64,11 @@ class ListActivity : AppCompatActivity(), GetDataTask.OnDataFetchedListener {
 
     private fun showProgressBar() {
         progressBar.visibility = ProgressBar.VISIBLE
+        progressOverlay.visibility = View.VISIBLE
     }
 
     private fun hideProgressBar() {
         progressBar.visibility = ProgressBar.GONE
+        progressOverlay.visibility = View.GONE
     }
 }

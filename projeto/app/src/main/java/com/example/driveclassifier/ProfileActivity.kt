@@ -32,6 +32,8 @@ class ProfileActivity : AppCompatActivity() {
         toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
+
+        findViewById<TextView>(R.id.txt_name).text = name
         getProfileData{ data ->
             if (data != null) {
                 // Process the data
