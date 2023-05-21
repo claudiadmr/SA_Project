@@ -62,7 +62,7 @@ class GetDataTask(private val sharedPreferences: SharedPreferences, private val 
         try {
             val jsonArray = JSONArray(json)
 
-            for (i in 0 until jsonArray.length()) {
+            for (i in jsonArray.length() - 1 downTo 0) {
                 val tripObject = jsonArray.getJSONObject(i)
                 val duration = tripObject.getInt("duration")
                 val endDate = tripObject.getString("end_date")

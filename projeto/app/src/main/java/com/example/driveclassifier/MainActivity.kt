@@ -90,7 +90,6 @@ class MainActivity : AppCompatActivity() {
                 var data = readDataSQLite()
                 if(!data.isEmpty()){
                     writeToURL(data, this)
-                    deleteDataInDB()
 
                 }else{
                     Toast.makeText(this, "No data to save!", Toast.LENGTH_LONG).show()
@@ -214,6 +213,7 @@ class MainActivity : AppCompatActivity() {
                         Log.d(TAG, "Data was successfully sent to the server. Response: $responseBody")
                         showToast(context, "Viagem guardada com sucesso!")
                     }
+                    deleteDataInDB()
                 } else {
                     // Handle unsuccessful response
                     Handler(Looper.getMainLooper()).post {
