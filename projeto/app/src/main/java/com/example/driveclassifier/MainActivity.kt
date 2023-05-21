@@ -80,15 +80,11 @@ class MainActivity : AppCompatActivity() {
                 name = nameEditText.text.toString().trim()
                 if (name.isNotBlank()) {
                     sharedPreferences.edit().putString("name", name).apply()
-                    findViewById<TextView>(R.id.txt_name).text = name
                     // Hide the name EditText and save button and show the other views
                     showView()
                 }
             }
         } else {
-            // If the name is already saved, show the other views
-            nameEditText.setText(name)
-            //findViewById<TextView>(R.id.txt_name).text = name
             showView()
             findViewById<Button>(R.id.btn_save_data).setOnClickListener{
                 var data = readDataSQLite()
